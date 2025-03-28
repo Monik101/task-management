@@ -1,7 +1,6 @@
 import NewTask from "./NewTask";
 import { useTaskContext } from "../_context/TaskContext";
-import { cn } from "@/utils";
-import { getStatusBgColor, getTypeBgColor } from "./Main";
+import TaskContainer from "./TaskContainer";
 
 function TasksList() {
   const {
@@ -44,33 +43,11 @@ function TasksList() {
     <div className="flex flex-col gap-3 overflow-y-auto pt-2 pb-16 px-4 max-h-[70vh]">
       {newTask && <NewTask newTask={newTask} setNewTask={setNewTask} />}
       {filteredTasks.map((item, idx) => (
-        <div
+        <TaskContainer
           key={`${item.status}-${item.description}-${idx}`}
-          className="flex bg-white rounded-lg p-2 items-center justify-between shadow-2xl"
-        >
-          <div className="flex flex-col gap-3 flex-1">
-            <p>{item.label}</p>
-            <p className="opacity-80">{item.description}</p>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div
-              className={cn(
-                "flex justify-center items-center p-2 rounded-md text-white font-bold text-xs w-24",
-                getTypeBgColor(item.type)
-              )}
-            >
-              {item.type}
-            </div>
-            <div
-              className={cn(
-                "flex justify-center items-center font-bold text-white p-2 rounded-md text-xs w-24",
-                getStatusBgColor(item.status)
-              )}
-            >
-              {item.status}
-            </div>
-          </div>
-        </div>
+          item={item}
+          idx={idx}
+        />
       ))}
     </div>
   );

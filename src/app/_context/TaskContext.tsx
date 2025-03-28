@@ -72,6 +72,7 @@ interface TaskContextType {
   selectedType: "All" | TaskType["type"];
   setNewTask: React.Dispatch<React.SetStateAction<TaskType | null>>;
   onTabSelect: (selectedTab: TabsType) => void;
+  onTaskEdit: (task: TaskType) => void;
   onAddClick: () => void;
   onTaskAdd: (task: TaskType) => void;
   handleFilterSelect: (type: TaskType["type"] | "All") => void;
@@ -87,6 +88,7 @@ const TaskContext = createContext<TaskContextType>({
   selectedType: "All",
   setNewTask: () => {},
   onTabSelect: () => {},
+  onTaskEdit: () => {},
   onAddClick: () => {},
   onTaskAdd: () => {},
   handleFilterSelect: () => {},
@@ -123,8 +125,23 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const onTaskAdd = (task: TaskType) => {
+    const isDuplicate = tasks.some(
+      (t) => t.label.toLowerCase() === task.label.toLowerCase()
+    );
+
+    if (isDuplicate) {
+      alert("A task with this label already exists!");
+      return;
+    }
+
     setTasks((prev) => [...prev, task]);
     setNewTask(null);
+  };
+
+  const onTaskEdit = (task: TaskType) => {
+    setTasks((prev) =>
+      prev.map((item) => (item.label === task.label ? task : item))
+    );
   };
 
   const onSetDefaultTasks = () => {
@@ -154,6 +171,7 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
         selectedType,
         setNewTask,
         onTabSelect,
+        onTaskEdit,
         onAddClick,
         onTaskAdd,
         handleFilterSelect,
