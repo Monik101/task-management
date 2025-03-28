@@ -1,6 +1,7 @@
 import TasksList from "./TasksList";
 import { useTaskContext } from "../_context/TaskContext";
 import { TaskType } from "../types";
+import Filter from "./Filter";
 
 export const getTypeBgColor = (type: TaskType["type"]) => {
   switch (type) {
@@ -31,9 +32,7 @@ function Main() {
   return (
     <div className="flex flex-col mt-20 gap-7 px-4 md:px-20 max-w-5xl mx-auto">
       <div className="flex justify-end items-center gap-4">
-        <div className="bg-white rounded-md p-2 px-4 cursor-pointer text-sm border">
-          Filter
-        </div>
+        <Filter />
         <div
           className="bg-gray-800 text-white rounded-4xl p-2 px-4 cursor-pointer font-bold font-mono"
           onClick={onSetDefaultTasks}

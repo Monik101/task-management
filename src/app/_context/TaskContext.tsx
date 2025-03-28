@@ -69,10 +69,13 @@ interface TaskContextType {
   tasks: TaskType[];
   newTask: TaskType | null;
   filteredTasks: TaskType[];
+  selectedType: "All" | TaskType["type"];
   setNewTask: React.Dispatch<React.SetStateAction<TaskType | null>>;
   onTabSelect: (selectedTab: TabsType) => void;
   onAddClick: () => void;
   onTaskAdd: (task: TaskType) => void;
+  handleFilterSelect: (type: TaskType["type"] | "All") => void;
+  resetFilters: () => void;
   onSetDefaultTasks: () => void;
 }
 
@@ -81,18 +84,25 @@ const TaskContext = createContext<TaskContextType>({
   tasks: [],
   newTask: null,
   filteredTasks: [],
+  selectedType: "All",
   setNewTask: () => {},
   onTabSelect: () => {},
   onAddClick: () => {},
   onTaskAdd: () => {},
+  handleFilterSelect: () => {},
+  resetFilters: () => {},
   onSetDefaultTasks: () => {},
 });
 
 export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
+  const [tasks, setTasks] = useState<TaskType[]>([]);
+
   const [newTask, setNewTask] = useState<TaskType | null>(null);
   const [tab, setTab] = useState<TabsType>("All");
 
-  const [tasks, setTasks] = useState<TaskType[]>([]);
+  const [selectedType, setSelectedType] = useState<"All" | TaskType["type"]>(
+    "All"
+  );
 
   const onTabSelect = (selectedTab: TabsType) => {
     setTab(selectedTab);
@@ -108,6 +118,10 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
+  const handleFilterSelect = (type: TaskType["type"] | "All") => {
+    setSelectedType(type);
+  };
+
   const onTaskAdd = (task: TaskType) => {
     setTasks((prev) => [...prev, task]);
     setNewTask(null);
@@ -117,9 +131,18 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     setTasks(defaultTasks);
   };
 
+  const resetFilters = () => {
+    setSelectedType("All");
+    setTab("All");
+  };
+
   const filteredTasks = useMemo(() => {
-    return tasks;
-  }, [tasks]);
+    return tasks.filter((item) => {
+      const statusMatch = tab === "All" || item.status === tab;
+      const typeMatch = selectedType === "All" || item.type === selectedType;
+      return statusMatch && typeMatch;
+    });
+  }, [tasks, tab, selectedType]);
 
   return (
     <TaskContext.Provider
@@ -128,10 +151,13 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
         tasks,
         newTask,
         filteredTasks,
+        selectedType,
         setNewTask,
         onTabSelect,
         onAddClick,
         onTaskAdd,
+        handleFilterSelect,
+        resetFilters,
         onSetDefaultTasks,
       }}
     >
