@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
-import { TaskType } from "../page";
-import TasksContainer from "./TasksContainer";
+import TasksList from "./TasksList";
+import { useTaskContext } from "../_context/TaskContext";
+import { TaskType } from "../types";
 
 export const getTypeBgColor = (type: TaskType["type"]) => {
   switch (type) {
@@ -15,38 +15,40 @@ export const getTypeBgColor = (type: TaskType["type"]) => {
   }
 };
 
-function Main({ tasks }: { tasks: TaskType[] }) {
-  const [newTask, setNewTask] = useState<TaskType | null>(null);
+export const getStatusBgColor = (status: TaskType["status"]) => {
+  switch (status) {
+    case "Completed":
+      return "bg-gray-400";
+    case "Pending":
+      return "bg-red-400";
+    default:
+      return "bg-gray-100";
+  }
+};
 
-  const onAddClick = () => {
-    setNewTask({
-      type: "Personal",
-      status: "Pending",
-      label: "",
-      description: "",
-    });
-  };
-
-  const filteredTasks = useMemo(() => {
-    return tasks;
-  }, []);
+function Main() {
+  const { onAddClick, onSetDefaultTasks } = useTaskContext();
   return (
     <div className="flex flex-col mt-20 gap-7 px-4 md:px-20 max-w-5xl mx-auto">
       <div className="flex justify-end items-center gap-4">
         <div className="bg-white rounded-md p-2 px-4 cursor-pointer text-sm border">
           Filter
         </div>
-        <div className="bg-black text-white rounded-4xl p-2 px-4 cursor-pointer font-bold">
+        <div
+          className="bg-gray-800 text-white rounded-4xl p-2 px-4 cursor-pointer font-bold font-mono"
+          onClick={onSetDefaultTasks}
+        >
+          Set Default Tasks
+        </div>
+        <div
+          className="bg-black text-white rounded-4xl p-2 px-4 cursor-pointer font-bold"
+          onClick={onAddClick}
+        >
           + Add Task
         </div>
       </div>
       <div className="font-mono text-xl">Tasks</div>
-      <TasksContainer
-        newTask={newTask}
-        tasks={filteredTasks}
-        setNewTask={setNewTask}
-        onAddClick={onAddClick}
-      />
+      <TasksList />
     </div>
   );
 }

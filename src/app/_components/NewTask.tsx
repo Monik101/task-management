@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react";
-import { TaskType } from "../page";
 import { cn } from "@/utils";
 import { getTypeBgColor } from "./Main";
+import { TaskType } from "../types";
+import { useTaskContext } from "../_context/TaskContext";
 
 function NewTask({
   newTask,
@@ -10,6 +11,7 @@ function NewTask({
   newTask: TaskType;
   setNewTask: React.Dispatch<React.SetStateAction<TaskType | null>>;
 }) {
+  const { onTaskAdd } = useTaskContext();
   const labelRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -18,9 +20,13 @@ function NewTask({
     }
   }, [labelRef]);
 
+  const isTaskSet = !(
+    newTask.label.trim().length === 0 || newTask.description.trim().length === 0
+  );
+
   return (
-    <div className="flex bg-white rounded-lg p-2 items-center justify-between">
-      <div className="flex flex-col gap-3">
+    <div className="flex bg-white rounded-lg p-2 items-center justify-between shadow-2xl">
+      <div className="flex flex-col gap-3 flex-1">
         <input
           ref={labelRef}
           placeholder="Label"
@@ -41,7 +47,7 @@ function NewTask({
               prev ? { ...prev, description: e.target.value } : null
             )
           }
-          className="outline-0 opacity-80"
+          className="outline-0 opacity-80 w-full flex-1 pl-0.5"
         />
       </div>
       <div className="flex items-center gap-8">
@@ -67,8 +73,28 @@ function NewTask({
           {newTask.status}
         </div>
 
-        <div className="text-3xl rounded-full bg-gray-300 h-8 w-8 flex justify-center items-center cursor-pointer opacity-10">
+        <div
+          className={cn(
+            "text-3xl rounded-full bg-gray-900 h-8 w-8 flex justify-center items-center cursor-pointer text-white",
+            {
+              "opacity-10": !isTaskSet,
+            }
+          )}
+          onClick={() => {
+            if (isTaskSet) onTaskAdd(newTask);
+          }}
+        >
           +
+        </div>
+        <div
+          className={cn(
+            "text-xl rounded-full bg-gray-900 h-8 w-8 flex justify-center items-center cursor-pointer text-white"
+          )}
+          onClick={() => {
+            setNewTask(null);
+          }}
+        >
+          x
         </div>
       </div>
     </div>

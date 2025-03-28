@@ -1,14 +1,10 @@
 import { cn } from "@/utils";
-import { TabsType } from "../page";
 import Image from "next/image";
+import { useTaskContext } from "../_context/TaskContext";
+import { TabsType } from "../types";
 
-function Header({
-  tab,
-  onTabSelect,
-}: {
-  tab: string;
-  onTabSelect: (selectedTab: TabsType) => void;
-}) {
+function Header() {
+  const { tab, onTabSelect } = useTaskContext();
   const tabs: TabsType[] = ["All", "Completed", "Pending"];
 
   return (
